@@ -1,0 +1,9 @@
+model,BRACS,CRC,LungHist700,MHIST,PCam,SPIDER-Breast
+CLIP,Never,1%,Never,Never,1%,10%
+CONCH,10%,1%,25%,100%,1%,1%
+GigaPath,25%,1%,50%,25%,1%,1%
+H-Optimus-0,25%,1%,50%,25%,1%,1%
+MIDNIGHT,25%,1%,25%,Never,1%,1%
+PLIP,Never,1%,50%,Never,1%,5%
+UNI,10%,1%,25%,25%,1%,1%
+VIRCHOW2,10%,1%,25%,25%,1%,1%
