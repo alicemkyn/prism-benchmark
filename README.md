@@ -1,5 +1,18 @@
 # PRISM: Pathology Reliability In Scarce-label Medicine
 
+<p align="center">
+  <img src="assets/logo.png" alt="PRISM Logo" width="400"/>
+</p>
+
+<p align="center">
+  <a href="https://neurips.cc/Conferences/2026"><img src="https://img.shields.io/badge/NeurIPS-2026-blue.svg" alt="NeurIPS 2026"/></a>
+  <a href="https://github.com/alicemkyn/prism-benchmark"><img src="https://img.shields.io/badge/pip-prism--bench-green.svg" alt="pip"/></a>
+  <a href="https://github.com/alicemkyn/prism-benchmark/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License MIT"/></a>
+  <img src="https://img.shields.io/badge/Python-3.8+-blue.svg" alt="Python 3.8+"/>
+  <img src="https://img.shields.io/badge/Models-8-purple.svg" alt="Models 8"/>
+  <img src="https://img.shields.io/badge/Datasets-6-orange.svg" alt="Datasets 6"/>
+</p>
+
 A benchmark for evaluating pathology foundation model **reliability** under label scarcity and domain shift.
 
 > [THUNDER](https://github.com/MICS-Lab/thunder) tells you which FM performs best. PRISM tells you which FM you can **trust** most when labels are scarce.
