@@ -1,7 +1,7 @@
 # PRISM: Pathology Reliability In Scarce-label Medicine
 
 <p align="center">
-  <img src="assets/logo.png" alt="PRISM Logo" width="400"/>
+  <img src="assets/logo_v4.png" alt="PRISM Logo" width="1000"/>
 </p>
 
 <p align="center">
