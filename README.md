@@ -138,6 +138,7 @@ prism compare \
 ```
 prism-benchmark/
 ├── notebooks/
+│   ├── PRISM_bootstrap_ci.ipynb
 │   ├── PRISM_analysis_v2.ipynb         # Main analysis, 7 figures
 │   ├── PRISM_OOD_analysis.ipynb        # OOD analysis, 3 figures
 │   ├── 00_Setup_Datasets.ipynb         # Dataset setup
