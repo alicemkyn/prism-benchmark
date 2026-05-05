@@ -2,7 +2,7 @@
 
 A benchmark for evaluating pathology foundation model **reliability** under label scarcity and domain shift.
 
-> THUNDER tells you which FM performs best. PRISM tells you which FM you can **trust** most when labels are scarce.
+> [THUNDER](https://github.com/MICS-Lab/thunder) tells you which FM performs best. PRISM tells you which FM you can **trust** most when labels are scarce.
 
 ## Installation
 
