@@ -34,6 +34,64 @@ PRISM evaluates model reliability using a linear probe protocol:
 
 **Key insight:** Embeddings are extracted once. PRISM samples different label fractions automatically - no model retraining needed.
 
+## Quick Start
+
+```python
+import numpy as np
+from prism_bench import PRISMEvaluator
+
+# 1. Extract embeddings from your model (any way you want)
+train_features = your_model.encode(train_images)  # (N, D)
+test_features  = your_model.encode(test_images)   # (M, D)
+
+# 2. Evaluate
+evaluator = PRISMEvaluator(results_dir='./results')
+results = evaluator.evaluate(
+    train_features, train_labels,
+    test_features, test_labels,
+    dataset='pcam',
+    model_name='MyModel',
+)
+
+# 3. Compare against 8 reference models
+comparison = evaluator.compare(results, dataset='pcam', fraction=0.1)
+print(comparison)
+# Output: ranked table with CRI scores
+```
+## Foundation Models
+
+<details>
+<summary><b>List of HuggingFace URLs (click to expand)</b></summary>
+
+| Model | Type | Size | License | HuggingFace |
+|---|---|---|---|---|
+| CLIP | Vision-Language | 86M | MIT | [openai/clip-vit-base-patch32](https://huggingface.co/openai/clip-vit-base-patch32) |
+| PLIP | Vision-Language | 86M | Custom | [vinid/plip](https://huggingface.co/vinid/plip) |
+| CONCH | Vision-Language | 86M | CC-BY-NC-ND 4.0 | [MahmoodLab/CONCH](https://huggingface.co/MahmoodLab/CONCH) |
+| UNI | Vision | 307M | CC-BY-NC-ND 4.0 | [MahmoodLab/UNI](https://huggingface.co/MahmoodLab/UNI) |
+| VIRCHOW2 | Vision | 632M | Apache 2.0 | [paige-ai/Virchow2](https://huggingface.co/paige-ai/Virchow2) |
+| GigaPath | Vision | 1.1B | Microsoft Research License | [prov-gigapath/prov-gigapath](https://huggingface.co/prov-gigapath/prov-gigapath) |
+| H-Optimus-0 | Vision | 1.1B | Apache 2.0 | [bioptimus/H-optimus-0](https://huggingface.co/bioptimus/H-optimus-0) |
+| MIDNIGHT | Vision | 1.1B | MIT | [kaiko-ai/midnight](https://huggingface.co/kaiko-ai/midnight) |
+
+</details>
+
+## Datasets
+
+<details>
+<summary><b>List of dataset sources (click to expand)</b></summary>
+
+| Dataset | Task | Classes | Samples | License | Source |
+|---|---|---|---|---|---|
+| PCam | Binary (tumor) | 2 | 327K | CC0 | [basveeling/pcam](https://github.com/basveeling/pcam) |
+| CRC | Multiclass | 9 | 107K | CC-BY 4.0 | [Zenodo 1214456](https://zenodo.org/records/1214456) |
+| MHIST | Binary (HP/SSA) | 2 | 3.2K | Custom (RUA) | [bmirds/MHIST](https://bmirds.github.io/MHIST/) |
+| BRACS | Multiclass | 7 | 4.5K | Custom | [bracs.icar.cnr.it](https://www.bracs.icar.cnr.it/) |
+| LungHist700 | Multiclass | 7 | 691 | CC-BY 4.0 | [Figshare](https://figshare.com/articles/dataset/LungHist700/24264394) |
+| SPIDER-Breast | Multiclass | 18 | 92.9K | CC-BY 4.0 | [histai/SPIDER-breast](https://huggingface.co/datasets/histai/SPIDER-breast) |
+
+</details>
+
 ## API Reference
 
 ### PRISMEvaluator
