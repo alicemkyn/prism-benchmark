@@ -4,54 +4,18 @@ A benchmark for evaluating pathology foundation model **reliability** under labe
 
 > THUNDER tells you which FM performs best. PRISM tells you which FM you can **trust** most when labels are scarce.
 
-## Overview
-
-PRISM evaluates 8 pathology foundation models across 6 histopathology datasets under 6 label fraction regimes (1-100%) and 4 cross-dataset OOD transfer scenarios. Beyond AUROC, PRISM measures:
-
-- **ECE / Brier Score** - calibration reliability
-- **Clinical Readiness Index (CRI)** = AUROC × (1 - ECE) × OOD_Stability
-- **Breaking Point Curves** - minimum label fraction for clinical utility
-- **Calibration Recoverability** - temperature scaling effectiveness
-- **Scaling Law of Reliability** - larger models are harder to trust
-
-## Models
-
-| Model | Parameters |
-|---|---|
-| CLIP | 86M |
-| PLIP | 86M |
-| CONCH | 86M |
-| MIDNIGHT | 86M |
-| VIRCHOW2 | 307M |
-| UNI | 307M |
-| GigaPath | 1.1B |
-| H-Optimus-0 | 1.1B |
-
-## Datasets
-
-PCam, MHIST, CRC, BRACS, LungHist700, SPIDER-Breast
-
 ## Installation
 
 ```bash
-pip install prism-bench
+pip install git+https://github.com/alicemkyn/prism-benchmark.git
 ```
 
 ## Quick Start
-
-### Evaluate your model
 
 ```python
 import numpy as np
 from prism_bench import PRISMEvaluator
 
-# Load your model's embeddings
-X_train = np.load("my_model_pcam_train_features.npy")
-y_train = np.load("my_model_pcam_train_labels.npy")
-X_test  = np.load("my_model_pcam_test_features.npy")
-y_test  = np.load("my_model_pcam_test_labels.npy")
-
-# Evaluate
 evaluator = PRISMEvaluator()
 results = evaluator.evaluate(
     train_features=X_train,
@@ -64,39 +28,31 @@ results = evaluator.evaluate(
 print(results.groupby("fraction")[["auroc", "ece", "ece_scaled"]].mean())
 ```
 
-### Compare against PRISM reference models
-
-```python
-evaluator = PRISMEvaluator(results_dir="/path/to/prism/results")
-comparison = evaluator.compare(results, dataset="pcam", fraction=0.1)
-print(comparison)
-```
-
-### CLI
+## CLI
 
 ```bash
-# Evaluate
 prism evaluate \
   --train-features X_train.npy --train-labels y_train.npy \
   --test-features X_test.npy --test-labels y_test.npy \
   --dataset pcam --model-name MyModel
-
-# Compare against reference models
-prism compare \
-  --results MyModel_pcam_results.csv \
-  --results-dir /path/to/prism/results \
-  --dataset pcam --fraction 0.1
 ```
 
-## Key Findings
+## Models
+CLIP, PLIP, CONCH, VIRCHOW2, UNI, GigaPath, H-Optimus-0, MIDNIGHT
 
-1. **Performance-Reliability Decoupling**: High AUROC models are systematically overconfident at low label fractions
-2. **Calibration Inversion**: On LungHist700, ECE worsens for UNI, GigaPath, H-Optimus-0 as label fraction increases
-3. **Scaling Law of Reliability**: Larger models require higher temperature scaling (T>2.7 for 1B+ models)
-4. **OOD Pair-Dependence**: AUROC drops of 0.15-0.57 across transfer pairs, largely model-independent
+## Datasets
+PCam, MHIST, CRC, BRACS, LungHist700, SPIDER-Breast
+
+## Key Findings
+1. **Performance-Reliability Decoupling**: High AUROC does not mean well-calibrated
+2. **Calibration Inversion**: On LungHist700, ECE worsens as label fraction increases for large models
+3. **Scaling Law of Reliability**: T>2.7 for 1B+ models vs T≈2.1 for 86M models
+4. **OOD Pair-Dependence**: AUROC drops 0.15-0.57 across transfer pairs
+
+## Pre-computed Embeddings
+Will be released on HuggingFace Datasets upon acceptance.
 
 ## Citation
-
 ```bibtex
 @inproceedings{prism2026,
   title={{PRISM}: Pathology Reliability In Scarce-label Medicine},
@@ -107,5 +63,4 @@ prism compare \
 ```
 
 ## License
-
 MIT License
