@@ -1,0 +1,2 @@
+[console_scripts]
+prism = prism_bench.cli:main
