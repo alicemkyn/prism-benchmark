@@ -24,6 +24,7 @@ pip install git+https://github.com/alicemkyn/prism-benchmark.git
 ```
 
 ## How It Works
+PRISM (Pathology Reliability In Scarce-label Medicine) is a comprehensive benchmarking framework designed to evaluate the clinical readiness and trustworthiness of pathology foundation models in data-scarce medical environments. The study evaluates eight leading models and six histopathology datasets, six label fraction regimes ranging from 1% to 100%, and four cross-dataset transfer scenarios. Unlike traditional benchmarks that primarily optimize for AUROC rankings, PRISM explicitly quantifies the gap between discriminative performance and calibration reliability, which is critical for real-world clinical deployment. The benchmark reveals key insights into the overconfidence traps of billion-parameter models under low-label regimes and demonstrates that calibration does not monotonically improve with more data. PRISM introduces the Clinical Readiness Index (CRI), Breaking Point Curves, and an Overconfidence Trap Heatmap.
 
 PRISM evaluates model reliability using a linear probe protocol:
 
@@ -31,6 +32,10 @@ PRISM evaluates model reliability using a linear probe protocol:
 2. PRISM trains a logistic regression at 6 label fractions (1%, 5%, 10%, 25%, 50%, 100%) with 3 random seeds
 3. At each fraction, PRISM computes AUROC, ECE, Brier score, temperature scaling, and CRI
 4. Results are compared against 8 reference models (CLIP, PLIP, CONCH, VIRCHOW2, UNI, GigaPath, H-Optimus-0, MIDNIGHT)
+   
+<p align="center">
+  <img src="assets/figure_1_overview.jpg" alt="PRISM Logo" width="1000"/>
+</p>
 
 **Key insight:** Embeddings are extracted once. PRISM samples different label fractions automatically - no model retraining needed.
 
