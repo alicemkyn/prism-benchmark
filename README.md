@@ -1,249 +1,308 @@
 # PRISM: Pathology Reliability In Scarce-label Medicine
 
 <p align="center">
-  <img src="assets/logo_v4.png" alt="PRISM Logo" width="1000"/>
+  <img src="assets/logo_v4.png" alt="PRISM" width="420"/>
 </p>
 
 <p align="center">
-  <a href="https://neurips.cc/Conferences/2026"><img src="https://img.shields.io/badge/NeurIPS-2026-blue.svg" alt="NeurIPS 2026"/></a>
-  <a href="https://github.com/alicemkyn/prism-benchmark"><img src="https://img.shields.io/badge/pip-prism--bench-green.svg" alt="pip"/></a>
-  <a href="https://github.com/alicemkyn/prism-benchmark/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License MIT"/></a>
+  <img src="https://img.shields.io/badge/NeurIPS-2026-blue.svg" alt="NeurIPS 2026"/>
+  <img src="https://img.shields.io/badge/version-0.2.0-green.svg" alt="version"/>
+  <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT"/>
   <img src="https://img.shields.io/badge/Python-3.8+-blue.svg" alt="Python 3.8+"/>
-  <img src="https://img.shields.io/badge/Models-8-purple.svg" alt="Models 8"/>
-  <img src="https://img.shields.io/badge/Datasets-6-orange.svg" alt="Datasets 6"/>
+  <img src="https://img.shields.io/badge/Models-8-purple.svg" alt="8 models"/>
+  <img src="https://img.shields.io/badge/Datasets-6-orange.svg" alt="6 datasets"/>
 </p>
 
-A benchmark for evaluating pathology foundation model **reliability** under label scarcity and domain shift.
+A benchmark for evaluating pathology foundation model **reliability** under
+label scarcity and domain shift.
 
-> [THUNDER](https://github.com/MICS-Lab/thunder) tells you which FM performs best. PRISM tells you which FM you can **trust** most when labels are scarce.
+> [THUNDER](https://github.com/MICS-Lab/thunder) tells you which foundation
+> model performs best. PRISM tells you which one you can **trust** when
+> labels are scarce and the target population differs from training.
+
+---
 
 ## Installation
 
 ```bash
-pip install git+https://github.com/alicemkyn/prism-benchmark.git
+# from a local checkout
+pip install -e .
 ```
 
-## How It Works
-PRISM (Pathology Reliability In Scarce-label Medicine) is a comprehensive benchmarking framework designed to evaluate the clinical readiness and trustworthiness of pathology foundation models in data-scarce medical environments. The study evaluates eight leading models and six histopathology datasets, six label fraction regimes ranging from 1% to 100%, and four cross-dataset transfer scenarios. Unlike traditional benchmarks that primarily optimize for AUROC rankings, PRISM explicitly quantifies the gap between discriminative performance and calibration reliability, which is critical for real-world clinical deployment. The benchmark reveals key insights into the overconfidence traps of billion-parameter models under low-label regimes and demonstrates that calibration does not monotonically improve with more data. PRISM introduces the Clinical Readiness Index (CRI), Breaking Point Curves, and an Overconfidence Trap Heatmap.
+If you are reading this through an anonymised mirror, the proxy serves a
+browsable copy but exposes no git endpoint, so `pip install git+<mirror-url>`
+will fail. Download the repository archive first and install from the
+extracted directory as above. The package will be published to PyPI on
+acceptance.
 
-PRISM evaluates model reliability using a linear probe protocol:
+Requirements: `numpy`, `pandas`, `scikit-learn`, `scipy`. No GPU.
 
-1. You extract embeddings from your model for any of the 6 PRISM datasets
-2. PRISM trains a logistic regression at 6 label fractions (1%, 5%, 10%, 25%, 50%, 100%) with 3 random seeds
-3. At each fraction, PRISM computes AUROC, ECE, Brier score, temperature scaling, and CRI
-4. Results are compared against 8 reference models (CLIP, PLIP, CONCH, VIRCHOW2, UNI, GigaPath, H-Optimus-0, MIDNIGHT)
-   
-<p align="center">
-  <img src="assets/figure_1_overview.jpg" alt="PRISM Logo" width="1000"/>
-</p>
+---
 
-**Key insight:** Embeddings are extracted once. PRISM samples different label fractions automatically - no model retraining needed.
+## How it works
 
-## Quick Start
+PRISM evaluates reliability with a frozen-feature linear probe:
 
-```python
-import numpy as np
-from prism_bench import PRISMEvaluator
+1. You extract embeddings once, with your own model and preprocessing.
+2. PRISM draws **class-stratified** subsets at six label fractions
+   (1%, 5%, 10%, 25%, 50%, 100%) with three seeds (42, 123, 456).
+3. At each cell it fits a logistic-regression probe and reports AUROC,
+   macro-F1, Brier score, ECE under two binning schemes, the optimal
+   temperature fitted on a held-out validation split, and post-scaling ECE.
+4. Results can be compared against eight reference foundation models:
+   CLIP, PLIP, CONCH, VIRCHOW2, UNI, GigaPath, H-Optimus-0, MIDNIGHT.
 
-# 1. Extract embeddings from your model (any way you want)
-train_features = your_model.encode(train_images)  # (N, D)
-test_features  = your_model.encode(test_images)   # (M, D)
+Embeddings are extracted once; label fractions are sampled from them. No
+retraining and no GPU after extraction.
 
-# 2. Evaluate
-evaluator = PRISMEvaluator(results_dir='./results')
-results = evaluator.evaluate(
-    train_features, train_labels,
-    test_features, test_labels,
-    dataset='pcam',
-    model_name='MyModel',
-)
+---
 
-# 3. Compare against 8 reference models
-comparison = evaluator.compare(results, dataset='pcam', fraction=0.1)
-print(comparison)
-# Output: ranked table with CRI scores
-```
-## Foundation Models
+## API
 
-<details>
-<summary><b>List of HuggingFace URLs (click to expand)</b></summary>
-
-| Model | Type | Size | License | HuggingFace |
-|---|---|---|---|---|
-| CLIP | Vision-Language | 86M | MIT | [openai/clip-vit-base-patch32](https://huggingface.co/openai/clip-vit-base-patch32) |
-| PLIP | Vision-Language | 86M | Custom | [vinid/plip](https://huggingface.co/vinid/plip) |
-| CONCH | Vision-Language | 86M | CC-BY-NC-ND 4.0 | [MahmoodLab/CONCH](https://huggingface.co/MahmoodLab/CONCH) |
-| UNI | Vision | 307M | CC-BY-NC-ND 4.0 | [MahmoodLab/UNI](https://huggingface.co/MahmoodLab/UNI) |
-| VIRCHOW2 | Vision | 632M | Apache 2.0 | [paige-ai/Virchow2](https://huggingface.co/paige-ai/Virchow2) |
-| GigaPath | Vision | 1.1B | Microsoft Research License | [prov-gigapath/prov-gigapath](https://huggingface.co/prov-gigapath/prov-gigapath) |
-| H-Optimus-0 | Vision | 1.1B | Apache 2.0 | [bioptimus/H-optimus-0](https://huggingface.co/bioptimus/H-optimus-0) |
-| MIDNIGHT | Vision | 1.1B | MIT | [kaiko-ai/midnight](https://huggingface.co/kaiko-ai/midnight) |
-
-</details>
-
-## Datasets
-
-<details>
-<summary><b>List of dataset sources (click to expand)</b></summary>
-
-| Dataset | Task | Classes | Samples | License | Source |
-|---|---|---|---|---|---|
-| PCam | Binary (tumor) | 2 | 327K | CC0 | [basveeling/pcam](https://github.com/basveeling/pcam) |
-| CRC | Multiclass | 9 | 107K | CC-BY 4.0 | [Zenodo 1214456](https://zenodo.org/records/1214456) |
-| MHIST | Binary (HP/SSA) | 2 | 3.2K | Custom (RUA) | [bmirds/MHIST](https://bmirds.github.io/MHIST/) |
-| BRACS | Multiclass | 7 | 4.5K | Custom | [bracs.icar.cnr.it](https://www.bracs.icar.cnr.it/) |
-| LungHist700 | Multiclass | 7 | 691 | CC-BY 4.0 | [Figshare](https://figshare.com/articles/dataset/LungHist700/24264394) |
-| SPIDER-Breast | Multiclass | 18 | 92.9K | CC-BY 4.0 | [histai/SPIDER-breast](https://huggingface.co/datasets/histai/SPIDER-breast) |
-
-</details>
-
-## API Reference
-
-### PRISMEvaluator
+### `PRISMEvaluator`
 
 ```python
 from prism_bench import PRISMEvaluator
-evaluator = PRISMEvaluator(results_dir=None)
+
+ev = PRISMEvaluator(results_dir=None, n_bins=15)
 ```
 
-`results_dir`: Path to PRISM reference CSVs. Required for `compare()`, optional for `evaluate()`.
+| argument | meaning |
+|---|---|
+| `results_dir` | path to the reference result CSVs; required for `compare()`, optional for `evaluate()` |
+| `n_bins` | ECE bin count, used for both binning schemes |
 
-### evaluate()
+### `evaluate()`
 
 ```python
-results = evaluator.evaluate(
-    train_features,   # np.ndarray (N, D) - training embeddings
-    train_labels,     # np.ndarray (N,)   - integer class labels
-    test_features,    # np.ndarray (M, D) - test embeddings
-    test_labels,      # np.ndarray (M,)   - integer class labels
-    dataset,          # str - e.g. "pcam"
-    model_name,       # str - display name (default: "CustomModel")
-    label_fractions,  # list of floats (default: [0.01, 0.05, 0.10, 0.25, 0.50, 1.00])
-    seeds,            # list of ints (default: [42, 123, 456])
+res = ev.evaluate(
+    train_features,          # (N, D) float array
+    train_labels,            # (N,)  integer labels
+    test_features,           # (M, D)
+    test_labels,             # (M,)
+    dataset         = "pcam",
+    model_name      = "MyModel",
+    val_features    = X_val,   # optional, but needed for calibration
+    val_labels      = y_val,
+    label_fractions = None,    # default [0.01, 0.05, 0.10, 0.25, 0.50, 1.00]
+    seeds           = None,    # default [42, 123, 456]
+    C               = 1.0,
+    max_iter        = 1000,
 )
 ```
 
-Returns `pd.DataFrame` with columns: `model, dataset, fraction, seed, auroc, ece, brier, temperature, ece_scaled`
+Works on **any** dataset, not only the six benchmark ones.
 
-Works on **any dataset**.
+Returns one row per (fraction, seed):
 
-### compare()
+| column | meaning |
+|---|---|
+| `auroc` | AUROC; macro one-vs-rest for multiclass |
+| `f1_macro` | macro-F1 |
+| `brier` | Brier score, binary tasks only |
+| `ece_fixed` | ECE, equal-width bins |
+| `ece_adaptive` | ECE, equal-mass bins, following Nixon et al. 2019 |
+| `temperature` | optimal T, fitted on the validation split |
+| `ece_scaled_fixed` | ECE after temperature scaling, equal-width bins |
+| `ece_scaled_adaptive` | ECE after temperature scaling, equal-mass bins |
+| `degeneracy_share` | share of test samples assigned to the most-predicted class |
+| `degenerate` | true when `degeneracy_share > 0.99` |
+| `forced_classes` | classes whose stratified quota fell below one sample |
+| `n_train`, `n_classes`, `seed`, `fraction` | bookkeeping |
+
+**On the validation split.** Temperature scaling needs held-out data. If you
+omit `val_features`, the temperature and both scaled-ECE columns are `NaN`
+and a warning is raised; CRI cannot be computed. PRISM never falls back to
+fitting the temperature on the evaluation set, since that yields an oracle
+estimate rather than a deployable one.
+
+**On degeneracy.** At low label fractions a linear probe often assigns every
+test sample to a single class. AUROC can remain informative in that regime
+while F1 and ECE describe a degenerate classifier. `degeneracy_share` makes
+this visible rather than leaving it implicit.
+
+### `compare()`
 
 ```python
-comparison = evaluator.compare(
-    custom_results,   # pd.DataFrame from evaluate()
-    dataset,          # str - must be one of the 6 PRISM datasets
-    fraction,         # float or None
+cmp = ev.compare(
+    custom_results,          # DataFrame returned by evaluate()
+    dataset     = "pcam",    # must be one of the six benchmark datasets
+    fraction    = 0.10,      # None shows every fraction
+    ece_column  = "ece_scaled_fixed",
+    aggregation = "multiplicative",
 )
 ```
 
-Returns `pd.DataFrame` sorted by CRI, comparing your model against 8 PRISM reference models.
+Returns a table sorted by CRI with your model placed among the eight
+reference models. Requires `results_dir`, and requires `dataset` to be one of
+the six benchmark datasets, since reference results exist only for those.
 
-**Requires:** `results_dir` set + embeddings from one of the 6 PRISM benchmark datasets.
+A model with no measured transfer performance is scored using the reference
+mean OOD stability and flagged in the `ood_stability_imputed` column.
 
-**Does NOT work** with custom datasets outside the 6 PRISM datasets.
-
-### Standalone metric functions
+### Standalone functions
 
 ```python
-from prism_bench import compute_auroc, compute_ece, compute_brier, compute_cri
+from prism_bench import (
+    compute_auroc, compute_brier, compute_ece,
+    temperature_scale, apply_temperature,
+    compute_ood_stability, compute_cri,
+)
 
-auroc = compute_auroc(labels, probs)
-ece   = compute_ece(probs, labels, n_bins=10)
-brier = compute_brier(labels, probs)
-cri   = compute_cri(auroc, ece_scaled, ood_stability)
+ece_f = compute_ece(probs, labels, n_bins=15, binning="fixed")
+ece_a = compute_ece(probs, labels, n_bins=15, binning="adaptive")
+
+T      = temperature_scale(val_logits, val_labels)   # held-out split only
+scaled = apply_temperature(test_logits, T)
+
+stab = compute_ood_stability(
+    ood_aurocs = {("pcam", "mhist"): 0.62},   # (source, target) -> OOD AUROC
+    id_aurocs  = {"pcam": 0.98},              # source -> in-distribution AUROC
+)
+
+cri = compute_cri(auroc, ece_scaled, stab, aggregation="multiplicative")
 ```
 
 ### Metrics
 
-| Metric | Description |
+| metric | definition |
 |---|---|
-| AUROC | Area under ROC curve (macro OvR for multiclass) |
-| ECE | Expected Calibration Error (10 bins) |
+| AUROC | area under the ROC curve, macro OvR for multiclass |
+| ECE | expected calibration error, 15 bins, fixed-width or equal-mass |
 | Brier | Brier score |
-| ece_scaled | ECE after temperature scaling |
-| temperature | Optimal temperature T (higher = more overconfident) |
-| CRI | Clinical Readiness Index = AUROC x (1 - ECE_scaled) x OOD_Stability |
+| temperature | scalar T minimising NLL on a held-out split |
+| OOD_Stability | mean over transfer pairs of OOD AUROC divided by in-distribution AUROC, clipped to 1 |
+| CRI | Clinical Readiness Index, AUROC x (1 - ECE_scaled) x OOD_Stability |
 
-## CLI Reference
+`compute_cri` also accepts `arithmetic`, `geometric` and `worst_axis`
+aggregations. Rankings agree across all four at Kendall tau between 0.71 and
+1.00, so the choice of rule does not drive the conclusions.
+
+---
+
+## Command line
 
 ```bash
-# Evaluate
 prism evaluate \
-  --train-features X_train.npy \
-  --train-labels   y_train.npy \
-  --test-features  X_test.npy  \
-  --test-labels    y_test.npy  \
-  --dataset        pcam        \
-  --model-name     MyModel
+  --train-features X_train.npy --train-labels y_train.npy \
+  --test-features  X_test.npy  --test-labels  y_test.npy \
+  --val-features   X_val.npy   --val-labels   y_val.npy \
+  --dataset pcam --model-name MyModel --output my_results.csv
 
-# Compare against reference models
 prism compare \
-  --results      results.csv             \
-  --results-dir  /path/to/prism/results  \
-  --dataset      pcam                    \
-  --fraction     0.1
+  --results my_results.csv --results-dir results/ \
+  --dataset pcam --fraction 0.10
 ```
 
-## Supported Datasets
+---
 
-| Dataset | Task | Classes |
+## Datasets
+
+| dataset | task | classes |
 |---|---|---|
-| pcam | Binary | 2 |
-| mhist | Binary | 2 |
-| crc | Multiclass | 9 |
-| bracs | Multiclass | 7 |
-| lunghist700 | Multiclass | 7 |
-| spider_breast | Multiclass | 18 |
+| `pcam` | binary | 2 |
+| `mhist` | binary | 2 |
+| `crc` | multiclass | 9 |
+| `bracs` | multiclass | 7 |
+| `lunghist700` | multiclass | 7 |
+| `spider_breast` | multiclass | 18 |
 
-## Repository Structure
+Transfer pairs: PCam to MHIST, MHIST to PCam, CRC to BRACS, BRACS to CRC.
+The multiclass datasets are binarised for transfer, with CRC using TUM
+against the rest and BRACS using IC and DCIS against the rest. These pairs
+involve a change of label definition alongside covariate shift and are not
+clean covariate-shift benchmarks.
+
+---
+
+## Key findings
+
+1. **Performance and calibration decouple as labels become scarce.** Under
+   full supervision, AUROC rank predicts calibration rank consistently across
+   all six datasets: pooled Spearman rho 0.57, 95% CI [0.28, 0.76], with
+   between-dataset heterogeneity I-squared of 0%. At 1% labels the
+   relationship is no longer detectable and becomes dataset-specific: rho
+   -0.30, CI [-0.73, 0.31], I-squared 67%. The difference between the two
+   regimes is significant, delta rho 0.75, CI [0.19, 1.27].
+
+2. **Calibration inversion.** On LungHist700, ECE worsens for UNI, GigaPath
+   and H-Optimus-0 as the label fraction rises from 1% to 100%.
+
+3. **Reverse OOD scaling.** On MHIST to PCam, more source labels produce
+   worse target calibration for the four pathology SSL models, with ECE
+   rising from roughly 0.23 to between 0.44 and 0.49.
+
+4. **Post-hoc calibration can be harmful under shift.** Fitting the
+   temperature on a held-out source validation split increases target ECE for
+   all eight models on MHIST to PCam and on CRC to BRACS, and helps only on
+   PCam to MHIST.
+
+5. **Calibration ranking is fragile to the probe hyperparameter.** Varying
+   the regularisation constant leaves the AUROC ranking essentially intact,
+   mean Kendall tau 0.82 with no sign inversions across 36 comparisons, while
+   scrambling the calibration ranking, tau 0.02 with 16 inversions.
+
+---
+
+## Repository layout
 
 ```
 prism-benchmark/
-├── notebooks/
-│   ├── PRISM_bootstrap_ci.ipynb
-│   ├── PRISM_analysis_v2.ipynb         # Main analysis, 7 figures
-│   ├── PRISM_OOD_analysis.ipynb        # OOD analysis, 3 figures
-│   ├── 00_Setup_Datasets.ipynb         # Dataset setup
-│   ├── Pcam/                           # 8 model feature extraction notebooks
-│   ├── bracs/
-│   ├── crc/
-│   ├── mhist/
-│   ├── lunghist700/
-│   ├── spider_breast/
-│   └── ood_embeddings_notebooks/       # GPU-free OOD evaluation notebooks
 ├── prism_bench/
-│   ├── __init__.py
-│   ├── metrics.py                      # AUROC, ECE, Brier, CRI, temperature scaling
-│   ├── evaluator.py                    # PRISMEvaluator class
-│   └── cli.py                          # prism CLI
+│   ├── metrics.py         AUROC, ECE under both binnings, temperature
+│   │                      scaling, OOD stability, CRI
+│   ├── evaluator.py       PRISMEvaluator
+│   └── cli.py             prism command line
+├── notebooks/
+│   ├── PRISM_analysis_v2.ipynb        main analysis, seven figures
+│   ├── PRISM_OOD_analysis.ipynb       transfer analysis, three figures
+│   ├── PRISM_bootstrap_ci.ipynb       bootstrap intervals
+│   ├── PRISM_rebuttal_phase1.ipynb    corrected re-computation
+│   ├── 00_Setup_Datasets.ipynb        dataset preparation
+│   ├── Pcam/ bracs/ crc/ mhist/ lunghist700/ spider_breast/
+│   │                                  per-model feature extraction
+│   ├── ood_embeddings_notebooks/      transfer evaluation; produced every
+│   │                                  reported OOD result
+│   └── ood_notebooks/                 superseded GPU implementation, kept
+│                                      for completeness; produced none of
+│                                      the reported results
+├── results/                as submitted
+├── results_v2/             corrected re-run, see CHANGELOG_REBUTTAL.md
 └── setup.py
 ```
 
-## Key Findings
+Both `results/` and `results_v2/` are kept so the two can be compared
+directly. Nothing in `results/` has been edited.
 
-1. **Performance-Reliability Decoupling**: High AUROC does not mean well-calibrated. On CRC, all models exceed AUROC=0.977 at 1% labels but ECE ranges from 0.18 to 0.36
-2. **Calibration Inversion**: On LungHist700, ECE worsens for UNI, GigaPath, H-Optimus-0 as label fraction increases from 1% to 100%
-3. **Scaling Law of Reliability**: T>2.7 for 1B+ parameter models vs T~2.1 for 86M models
-4. **OOD Pair-Dependence**: AUROC drops of 0.15-0.57 across transfer pairs, largely model-independent
+---
 
 ## Limitations
 
-- `compare()` requires embeddings from one of the 6 PRISM benchmark datasets
-- `evaluate()` works on any dataset and any embeddings
-- Pre-computed embeddings will be released on HuggingFace Datasets upon paper acceptance
+- `compare()` requires embeddings from one of the six benchmark datasets;
+  `evaluate()` works on any dataset.
+- Linear probes on frozen features. PEFT and full fine-tuning are outside the
+  main protocol.
+- Four transfer pairs, each involving a change of label definition alongside
+  covariate shift.
+- CRI is a screening heuristic, not a validated clinical instrument. Its
+  OOD_Stability term is a ratio and therefore partially rewards models with
+  weaker in-distribution performance.
+- Pre-computed embeddings will be released on Hugging Face Datasets on
+  acceptance.
+
+---
 
 ## Citation
 
 ```bibtex
 @inproceedings{prism2026,
-  title={{PRISM}: Pathology Reliability In Scarce-label Medicine},
-  author={Anonymous},
-  booktitle={NeurIPS Evaluations and Datasets Track},
-  year={2026}
+  title     = {{PRISM}: Pathology Reliability In Scarce-label Medicine},
+  author    = {Anonymous},
+  booktitle = {NeurIPS Evaluations and Datasets Track},
+  year      = {2026}
 }
 ```
 
 ## License
 
-MIT License
+MIT
