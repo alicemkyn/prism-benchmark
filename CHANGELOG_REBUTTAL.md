@@ -220,10 +220,21 @@ edit.
 | `results_v2/cri_variants_1.csv`, `cri_variants_100.csv` | four aggregation rules |
 | `results_v2/old_vs_new_indomain.csv` | submitted versus corrected, per cell |
 | `results_v2/rank_diff_by_fraction.csv` | mean rank displacement by label fraction |
+| `results_v2/peft_all.csv` | 36 LoRA fine-tuning runs |
+| `results_v2/peft_vs_linear.csv` | LoRA against the frozen linear probe, matched cells |
 | `notebooks/PRISM_rebuttal_phase1.ipynb` | reproduces every corrected number |
+| `notebooks/PRISM_rebuttal_phase3_peft.ipynb` | LoRA experiment requested by Reviewer fWEj |
 
-The LoRA experiment requested by Reviewer fWEj is still running. Its notebook
-and results will be added here when it completes.
+The LoRA experiment covers two models (UNI, H-Optimus-0) on two datasets
+(MHIST, LungHist700) at three label fractions with three seeds. Two caveats
+apply to any comparison of absolute performance between the two probes, and
+we state them rather than leave them implicit. First, the frozen-probe results
+use cached embeddings extracted with a shared preprocessing pipeline, whereas
+the LoRA runs use each model's own `timm` data configuration. Second, the
+training budget is a fixed ten epochs rather than a fixed number of gradient
+steps, so cells at 1% labels receive far fewer updates than cells at 100%.
+Neither caveat affects the finding the experiment was run to test, which is a
+within-probe comparison across label fractions.
 
 ## Files unchanged
 
