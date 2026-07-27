@@ -224,6 +224,11 @@ edit.
 | `results_v2/peft_vs_linear.csv` | LoRA against the frozen linear probe, matched cells |
 | `notebooks/PRISM_rebuttal_phase1.ipynb` | reproduces every corrected number |
 | `notebooks/PRISM_rebuttal_phase3_peft.ipynb` | LoRA experiment requested by Reviewer fWEj |
+| `results_v2/mlp_probe.csv`, `mlp_vs_linear*.csv` | 864 cells replicated with a one-hidden-layer MLP probe |
+| `results_v2/ood_mlp.csv`, `ood_mlp_vs_linear.csv` | 576 transfer cells under the MLP probe |
+| `results_v2/ood_c_ablation.csv`, `ood_c_ranking.csv` | regularisation sweep in the transfer setting, 1,440 fits |
+| `notebooks/PRISM_rebuttal_mlp_probe.ipynb`, `PRISM_rebuttal_ood_mlp.ipynb`, `PRISM_rebuttal_ood_c_ablation.ipynb` | the three ablations above |
+| `notebooks/PRISM_rebuttal_figures.ipynb` | redrawn Figures 2, 4 and 5, plus the collapse audit and rank-correlation figures |
 
 The LoRA experiment covers two models (UNI, H-Optimus-0) on two datasets
 (MHIST, LungHist700) at three label fractions with three seeds. Two caveats
