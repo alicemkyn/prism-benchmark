@@ -1,0 +1,6 @@
+hospital,mode,slides,n_train,n_val,n_test,tum_train,tum_val,tum_test
+0,slide-disjoint,10,14757,1263,3980,0.544,0.193,0.435
+1,slide-disjoint,10,14956,1505,3539,0.501,0.064,0.683
+2,slide-disjoint,10,15579,1789,2632,0.564,0.02,0.447
+3,slide-disjoint,10,6450,1688,11862,0.058,0.001,0.811
+4,slide-disjoint,10,9519,1099,9382,0.235,0.003,0.827
