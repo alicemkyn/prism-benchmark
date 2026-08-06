@@ -1,5 +1,12 @@
 # Changelog — rebuttal revision
 
+> **Scope.** This file covers the first NeurIPS 2026 rebuttal round only, and is
+> kept as it was written at the time. Work after that round, including the
+> second-round analyses and the Camelyon17 covariate-shift extension, is in
+> `CHANGELOG.md`. Where the two disagree, `CHANGELOG.md` is current: in
+> particular, the reverse OOD scaling result described below was subsequently
+> found to depend on transfer quality rather than on distribution shift as such.
+
 This file documents every change made to the codebase after the reviews were
 received. Reviewers inspected the submitted version; this record exists so
 that any difference they observe is accounted for. The submitted code remains
