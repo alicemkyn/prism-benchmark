@@ -58,7 +58,7 @@ The protocol:
 4. Results are compared against 8 reference models (CLIP, PLIP, CONCH, VIRCHOW2, UNI, GigaPath, H-Optimus-0, MIDNIGHT)
 
 <p align="center">
-  <img src="assets/figure_1_overview.jpg" alt="PRISM overview" width="1000"/>
+  <img src="assets/figure_1_overview_v2.png" alt="PRISM overview" width="1000"/>
 </p>
 
 **Key insight:** Embeddings are extracted once. PRISM samples different label fractions automatically - no model retraining needed.
