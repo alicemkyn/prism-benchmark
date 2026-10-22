@@ -1,0 +1,12 @@
+include README.md CHANGELOG.md CHANGELOG_REBUTTAL.md LICENSE pyproject.toml setup.py requirements.txt
+recursive-include prism_bench/reference *.csv *.md
+recursive-include tests *.py
+prune notebooks
+prune results
+prune results_v2
+prune figures
+prune assets
+prune supplementary
+prune data
+prune scripts
+global-exclude *.py[cod] __pycache__ .DS_Store
