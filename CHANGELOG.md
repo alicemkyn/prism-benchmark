@@ -6,6 +6,104 @@ it is a record of a specific exchange with reviewers rather than a running log.
 
 ---
 
+## v0.3.0 — camera-ready release (2026-10-04)
+
+First packaged release at version 0.3.0. The covariate-shift extension
+documented in the next section was written under the 0.3.0 heading while the
+package metadata still read 0.2.0; both are now released together, and the
+version is 0.3.0 in `pyproject.toml`, `setup.py` (shim), `prism_bench.__version__`
+and the README badge.
+
+### Naming and metadata
+- Title: *PRISM: Pathology Reliability In Scarce-label Medicine. A Tile-level
+  Benchmark of Pathology Foundation Models*. Author: Alicem Koyun, Westcliff
+  University; NeurIPS 2026 Workshop on GenAI for Health.
+- CRI is renamed **Composite Reliability Index** (previously "Clinical
+  Readiness Index"); the acronym and all function names (`compute_cri`,
+  `cri` columns) are unchanged.
+
+### Fixes
+1. **`prism evaluate` crashed** with `KeyError: "Columns not found: 'ece',
+   'ece_scaled'"`: the summary requested columns that `evaluate()` does not
+   return. It now summarises `auroc, f1_macro, brier, ece_fixed, temperature,
+   ece_scaled_fixed, degeneracy_share`.
+2. **`--val-features` / `--val-labels` were documented but not defined** in the
+   CLI, so temperature scaling and CRI could not be computed from the command
+   line. Both are added (and must be given together), together with
+   `--label-fractions`, `--seeds`, `--C`; `prism compare` gains
+   `--aggregation` and `--ood-stability`; `--results-dir` is now optional;
+   new `prism reference` and `prism --version`; `python -m prism_bench` works.
+3. **`compare()` read the as-submitted v1 files** (`results/*_results.csv`,
+   `*_temperature_scaling.csv`), so users saw reference values that differ
+   from the paper. It now reads the corrected `results_v2` layout
+   (`indomain_all_v2.csv`, `ood_all_v2.csv`), mapping dataset keys onto the
+   names used there (`pcam -> PCam`, `spider_breast -> SPIDER-Breast`, ...).
+   OOD_Stability is computed from `ood_all_v2.csv` in the same way. The legacy
+   layout is still readable, with a warning, for traceability.
+4. **Bundled reference.** The `results_v2` files `compare()` needs are shipped
+   as package data (`prism_bench/reference/`, byte-identical copies), so
+   `PRISMEvaluator()` works after `pip install prism-bench`. A
+   `results_dir="results_v2"` that does not exist falls back to the bundled
+   copy with a warning.
+5. **`reference_cri(fraction)` and `compare(dataset="all")`** pool the six
+   datasets and reproduce `results_v2/cri_variants_100.csv` and
+   `cri_variants_1.csv` (max abs. difference < 1e-15).
+6. **Binary temperature convention.** The binary logit `d` was expanded to
+   `[-d, d]`, whose softmax is sigmoid(2d) rather than the probe's sigmoid(d),
+   so a fitted binary temperature was twice the temperature of the probe
+   itself and T = 1 did not reproduce the raw probabilities. Logits are now
+   `[-d/2, d/2]`. Scaled probabilities, `ece_scaled_*` and CRI are unchanged;
+   the binary `temperature` column in `results_v2` (produced by
+   `PRISM_rebuttal_phase1.ipynb` with the old convention) should be divided by
+   2 to be read on the probe's scale. Under that reading binary probes are
+   close to calibrated (over-confident in 33 of 96 cells), while multiclass
+   probes are under-confident (T < 1 in 189 of 192 cells).
+7. Input validation in `evaluate()` (length mismatches; `val_features`
+   without `val_labels`).
+8. Packaging: PEP 621 `pyproject.toml`, `MANIFEST.in` (sdist excludes
+   notebooks and result directories), `LICENSE` (MIT, as stated in the
+   README), `scripts/build_pypi.sh` (build + `twine check`; the upload
+   command is left commented out).
+9. Tests: `tests/test_end_to_end.py` (pytest, synthetic embeddings) covers
+   `evaluate` with and without a validation split, the Appendix E snippet
+   verbatim, reference rows against `results_v2`, the CRI regression targets,
+   the bundled and legacy fallbacks, and the CLI via subprocess.
+
+### Documentation
+- README: new title and author; *Composite Reliability Index* wording;
+  installation via `pip install prism-bench` and from GitHub; Hugging Face
+  embeddings section; non-anonymous citation. Placeholders still to be filled
+  are marked `TODO(camera-ready)` (`GITHUB_URL`, `HF_DATASET_URL`).
+- Key Findings corrected against `results_v2`: no "50x" claim (temperature
+  scaling removes up to 0.45 of ECE yet fails to reduce it in 49 of 288
+  cells); direction of miscalibration stated by task type; decoupling stated
+  as a property of the fixed-probe evaluation pipeline; the 0.85 transfer-AUROC
+  value described as observed in these settings and correlational; the
+  source-temperature result scoped to the source fractions where it holds for
+  all eight models (MHIST→PCam ≥ 25%, CRC→BRACS ≥ 5%); CLIP's Camelyon17 AUROC
+  labelled as a mean over label fractions; CRC example updated to v2 values
+  (AUROC > 0.977, raw ECE 0.18–0.37).
+- Dataset count aligned with the paper: six datasets plus Camelyon17 (badge
+  previously read "Datasets 7").
+- `CHANGELOG_REBUTTAL.md` item 10: dated correction note added (the
+  in-distribution notebooks do not use a single shared transform). The
+  original text is left in place.
+
+### Corrections to earlier entries in this file
+- *v0.2.1, "Breaking points across thresholds"* states that the ordering of
+  models "is stable at every threshold tested". `results_v2/breaking_points_by_threshold.csv`
+  does not support this on LungHist700: at threshold 0.4 PLIP and CONCH cross
+  at 1% labels and UNI only at 25%, so the ordering changes at that threshold.
+  (Correction added 2026-10-04; the original sentence is left unchanged
+  below.)
+
+### Unchanged
+- `results/` (v1, as submitted) and `results_v2/` are untouched.
+- Fixed C = 1 remains the main protocol; tuned-C and slide-disjoint
+  Camelyon17 replications are deferred to a journal version.
+
+---
+
 ## v0.3.0 — covariate-shift extension
 
 ### What changed in the claim

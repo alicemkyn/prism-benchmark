@@ -204,6 +204,23 @@ points are being corrected in the text rather than by re-extracting features,
 since all models received identical treatment and the comparison remains
 controlled.
 
+> **Correction (2026-10-04, camera-ready, v0.3.0).** The paragraph above is
+> kept as originally written, but its description of the in-distribution
+> extraction is wrong. The extraction notebooks for the six main datasets
+> (`notebooks/{Pcam,bracs,crc,mhist,lunghist700,spider_breast}/`) do **not**
+> apply a single shared transform. GigaPath uses `Resize(256)` +
+> `CenterCrop(224)`; H-Optimus-0 uses its own normalisation statistics
+> (mean 0.707223, 0.578729, 0.703617); CONCH uses the transform returned by
+> `conch.open_clip_custom.create_model_from_pretrained`; CLIP, PLIP, UNI,
+> VIRCHOW2 and MIDNIGHT use `Resize(224)` + `CenterCrop(224)` with ImageNet
+> statistics (for CLIP, PLIP and MIDNIGHT this departs from their documented
+> transforms). The L2 normalisation of features is correct and applies to all
+> 48 extraction notebooks. Consequently the statement that "all models
+> received identical treatment" does not hold; the preprocessing table in the
+> paper (`tab:preproc`), which matches the notebooks, is the authoritative
+> description, and the resulting heterogeneity is listed as a confound in the
+> paper's limitations. No result file is affected by this correction.
+
 ## 11. Notebook metadata normalised
 
 All notebooks were passed through a metadata check while preparing this
