@@ -1,0 +1,9 @@
+model,hub_id,resize,crop,mean,std,feature,dim_expected,source
+CLIP,openai/clip-vit-base-patch32,224,224,"(0.4815, 0.4578, 0.4082)","(0.2686, 0.2613, 0.2758)",vision_model pooler_output (no projection),768,"PRISM_camelyon17_extract.ipynb cell 9 (re-extraction; EXPECT=768). Supersedes the first-pass value 512 (visual_projection) in the repo's data/camelyon17/preprocessing_table.csv"
+PLIP,vinid/plip,224,224,"(0.4815, 0.4578, 0.4082)","(0.2686, 0.2613, 0.2758)",vision_model pooler_output (no projection),768,"cell 9 (re-extraction; EXPECT=768). Supersedes first-pass 512"
+CONCH,hf_hub:MahmoodLab/conch (conch_ViT-B-16),loader,loader,loader,loader,"encode_image(proj_contrast=False, normalize=False)",512,cell 7 / cell 3
+UNI,hf-hub:MahmoodLab/uni,224,224,"(0.485, 0.456, 0.406)","(0.229, 0.224, 0.225)",timm forward (CLS),1024,cell 3 (timm resolve_data_config)
+VIRCHOW2,hf-hub:paige-ai/Virchow2,224,224,"(0.485, 0.456, 0.406)","(0.229, 0.224, 0.225)",concat(CLS; mean of patch tokens 5:),2560,cell 3 (timm resolve_data_config)
+GigaPath,hf_hub:prov-gigapath/prov-gigapath,224,224,"(0.485, 0.456, 0.406)","(0.229, 0.224, 0.225)",timm forward (CLS),1536,cell 3 (timm resolve_data_config)
+H-Optimus-0,hf-hub:bioptimus/H-optimus-0,256,224,"(0.7072, 0.5787, 0.7036)","(0.2119, 0.2301, 0.1775)",timm forward (CLS),1536,cell 3 (timm resolve_data_config)
+MIDNIGHT,kaiko-ai/midnight,224,224,"(0.5, 0.5, 0.5)","(0.5, 0.5, 0.5)",pooler_output,1536,"cell 9 (re-extraction; EXPECT=1536). Supersedes first-pass 3072 (concat CLS + mean patch)"

@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "prism-bench"
+version = "0.3.0"
+description = "PRISM: Pathology Reliability In Scarce-label Medicine. A tile-level benchmark of pathology foundation models."
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{name = "Alicem Koyun"}]
+keywords = ["pathology", "foundation models", "benchmark", "calibration",
+            "label efficiency", "distribution shift", "temperature scaling"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+]
+dependencies = [
+    "numpy>=1.21",
+    "pandas>=1.3",
+    "scikit-learn>=1.0",
+    "scipy>=1.7",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=7"]
+
+[project.scripts]
+prism = "prism_bench.cli:main"
+
+# TODO(camera-ready): add HF_DATASET_URL once the dataset repo is public.
+[project.urls]
+Homepage = "https://github.com/alicemkyn/prism-benchmark"
+Source = "https://github.com/alicemkyn/prism-benchmark"
+Embeddings = "https://huggingface.co/datasets/HF_DATASET_URL"
+
+[tool.setuptools]
+packages = ["prism_bench", "prism_bench.reference"]
+include-package-data = true
+
+[tool.setuptools.package-data]
+"prism_bench.reference" = ["*.csv", "README.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

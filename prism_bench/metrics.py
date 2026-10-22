@@ -1,6 +1,17 @@
 """
 PRISM reliability metrics.
 
+Revision notes (v0.3.0, camera-ready):
+  * The composite is renamed Composite Reliability Index (acronym and
+    function name ``compute_cri`` unchanged). It is a screening heuristic
+    under the fixed-probe protocol, not a measure of clinical readiness.
+  * A 1-D binary logit ``d`` (p(1) = sigmoid(d), as returned by
+    ``LogisticRegression.decision_function``) is expanded to [-d/2, d/2]
+    so that T = 1 reproduces the probe's own probabilities. The previous
+    [-d, d] expansion corresponded to sigmoid(2d), i.e. binary temperatures
+    were reported on a doubled-logit scale (T_v0.2 = 2 * T_v0.3). Scaled
+    probabilities are unchanged.
+
 Revision notes (rebuttal revision):
   * ECE is now available under both fixed-width and adaptive (equal-mass)
     binning. The submitted version described adaptive binning in the paper
@@ -90,6 +101,16 @@ def compute_ece(probs, labels, n_bins=DEFAULT_N_BINS, binning="fixed"):
     return _ece_from_edges(conf, correct, edges)
 
 
+def _as_logit_matrix(logits):
+    """(N,) binary logit d with p(1) = sigmoid(d) -> (N, 2) matrix
+    [-d/2, d/2], whose softmax is exactly sigmoid(d). (N, K) passes through."""
+    logits = np.asarray(logits, dtype=float)
+    if logits.ndim == 1:
+        half = logits.reshape(-1, 1) / 2.0
+        logits = np.hstack([-half, half])
+    return logits
+
+
 def _softmax(z):
     z = z - z.max(axis=1, keepdims=True)
     e = np.exp(z)
@@ -104,13 +125,11 @@ def temperature_scale(logits, labels, bounds=(0.1, 10.0)):
     scripts made exactly this mistake; PRISMEvaluator now enforces a
     source-domain validation split for transfer settings.
 
-    Accepts either (N,) binary decision-function output or an (N, K) logit
-    matrix.
+    Accepts either (N,) binary decision-function output (p(1) = sigmoid(d))
+    or an (N, K) logit matrix. T > 1 softens the probabilities (the probe
+    was over-confident); T < 1 sharpens them (under-confident).
     """
-    logits = np.asarray(logits, dtype=float)
-    if logits.ndim == 1:
-        logits = logits.reshape(-1, 1)
-        logits = np.hstack([-logits, logits])
+    logits = _as_logit_matrix(logits)
     labels = np.asarray(labels).astype(int)
     idx = np.arange(len(labels))
 
@@ -123,10 +142,7 @@ def temperature_scale(logits, labels, bounds=(0.1, 10.0)):
 
 def apply_temperature(logits, T):
     """Return calibrated probabilities for a fitted temperature."""
-    logits = np.asarray(logits, dtype=float)
-    if logits.ndim == 1:
-        logits = logits.reshape(-1, 1)
-        logits = np.hstack([-logits, logits])
+    logits = _as_logit_matrix(logits)
     return _softmax(logits / T)
 
 
@@ -158,7 +174,7 @@ def compute_ood_stability(ood_aurocs, id_aurocs):
 
 
 def compute_cri(auroc, ece_scaled, ood_stability, aggregation="multiplicative"):
-    """Clinical Readiness Index.
+    """Composite Reliability Index (CRI).
 
     CRI = AUROC x (1 - ECE_scaled) x OOD_Stability
 
@@ -172,6 +188,12 @@ def compute_cri(auroc, ece_scaled, ood_stability, aggregation="multiplicative"):
     across rules (Kendall tau 0.71-1.00 in our experiments), so the
     multiplicative default is retained for interpretability: a model fails
     the index if it fails on any single axis.
+
+    The CRI is a screening heuristic computed under the fixed-probe PRISM
+    protocol (frozen embeddings, L2-normalised features, logistic regression
+    with C = 1). It is not a validated clinical instrument, and its OOD term
+    is a ratio that can favour models with weak in-distribution AUROC; report
+    the three components alongside it.
     """
     a = float(auroc)
     e = float(np.clip(ece_scaled, 0.0, 1.0))
