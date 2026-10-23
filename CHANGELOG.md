@@ -73,7 +73,7 @@ and the README badge.
 - README: new title and author; *Composite Reliability Index* wording;
   installation via `pip install prism-bench` and from GitHub; Hugging Face
   embeddings section; non-anonymous citation. Placeholders still to be filled
-  are marked `TODO(camera-ready)` (`GITHUB_URL`, `HF_DATASET_URL`).
+  were marked `TODO(camera-ready)`; both filled in v0.3.0 (GitHub URL, HF dataset alicemkyn/PRISM-embeddings).
 - Key Findings corrected against `results_v2`: no "50x" claim (temperature
   scaling removes up to 0.45 of ECE yet fails to reduce it in 49 of 288
   cells); direction of miscalibration stated by task type; decoupling stated

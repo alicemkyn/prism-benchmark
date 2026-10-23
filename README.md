@@ -103,22 +103,30 @@ runs it verbatim on synthetic embeddings.
 
 ## Pre-computed embeddings (Hugging Face)
 
-Pre-computed embeddings for the eight FMs on the PRISM datasets are distributed
-through Hugging Face Datasets:
+Pre-computed embeddings for the released FM x dataset cells are distributed
+through Hugging Face Datasets (gated: click-through agreement, non-commercial research):
 
-**HF_DATASET_URL** &nbsp;<!-- TODO(camera-ready): replace with https://huggingface.co/datasets/<org>/<name> -->
+**https://huggingface.co/datasets/alicemkyn/PRISM-embeddings**
+
+Released: CLIP, PLIP, GigaPath, H-Optimus-0 and MIDNIGHT on PCam, CRC, BRACS,
+LungHist700, SPIDER-Breast and Camelyon17 (300 `.npy` files, 14.3 GB, plus parquet
+copies loadable with `datasets`). MHIST (research-use agreement) and UNI, CONCH,
+VIRCHOW2 (CC-BY-NC-ND model licences) are not redistributed; `checksums.csv` on the
+Hub lists their SHA256 and numerical fingerprints so a local re-extraction can be
+verified with `embeddings_release/code/extract_embeddings.py verify`.
 
 ```python
-# TODO(camera-ready): fill in repo id and file layout once the dataset is public
 from huggingface_hub import snapshot_download
-path = snapshot_download(repo_id="HF_DATASET_URL", repo_type="dataset")
+path = snapshot_download(repo_id="alicemkyn/PRISM-embeddings", repo_type="dataset",
+                         allow_patterns=["embeddings/gigapath/bracs/*"])
 ```
 
-Redistribution follows each source dataset's licence; where a licence does not
-permit redistribution of derived features, the dataset card gives the
-extraction notebook and split indices instead of the embeddings
-(TODO(camera-ready): list which datasets are released as embeddings vs.
-recipe-only, per the dataset card).
+Redistribution follows each source dataset's and model's licence. Released as
+embeddings: PCam, CRC, BRACS, LungHist700, SPIDER-Breast and Camelyon17 from
+CLIP, PLIP, GigaPath, H-Optimus-0 and MIDNIGHT. Recipe-only (extraction guide,
+split indices and checksums, no features): MHIST for every model, and UNI, CONCH,
+VIRCHOW2 for every dataset. The reasoning per cell is in `RELEASE_POLICY.md` on
+the Hub and in `embeddings_release/`.
 
 ## Foundation Models
 
@@ -522,9 +530,6 @@ additional labels made the probabilities worse rather than better.
   url       = {https://github.com/alicemkyn/prism-benchmark}
 }
 ```
-
-TODO(camera-ready): add the OpenReview URL (and
-add the OpenReview / proceedings URL once available).
 
 ## License
 

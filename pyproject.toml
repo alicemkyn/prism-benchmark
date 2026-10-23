@@ -32,11 +32,10 @@ test = ["pytest>=7"]
 [project.scripts]
 prism = "prism_bench.cli:main"
 
-# TODO(camera-ready): add HF_DATASET_URL once the dataset repo is public.
 [project.urls]
 Homepage = "https://github.com/alicemkyn/prism-benchmark"
 Source = "https://github.com/alicemkyn/prism-benchmark"
-Embeddings = "https://huggingface.co/datasets/HF_DATASET_URL"
+Embeddings = "https://huggingface.co/datasets/alicemkyn/PRISM-embeddings"
 
 [tool.setuptools]
 packages = ["prism_bench", "prism_bench.reference"]

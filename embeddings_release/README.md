@@ -158,20 +158,21 @@ Dataset keys: `pcam`, `crc`, `bracs`, `lunghist700`, `spider_breast` (withheld: 
 ```python
 from datasets import load_dataset
 # every released model for one dataset (large for PCam):
-ds = load_dataset("<HF_REPO_ID>", "bracs")
+ds = load_dataset("alicemkyn/PRISM-embeddings", "bracs")
 # one model only:
-ds = load_dataset("<HF_REPO_ID>", data_files={
+ds = load_dataset("alicemkyn/PRISM-embeddings", data_files={
     "train": "data/bracs/h_optimus_0/train.parquet"})          # path pattern: data/{dataset}/{model}/{split}.parquet
 # or the canonical numpy files:
 from huggingface_hub import hf_hub_download
 import numpy as np
-X = np.load(hf_hub_download("<HF_REPO_ID>", "embeddings/gigapath/bracs/train_features.npy", repo_type="dataset"))
+X = np.load(hf_hub_download("alicemkyn/PRISM-embeddings", "embeddings/gigapath/bracs/train_features.npy", repo_type="dataset"))
 ```
 
-**Normalisation.** The stored features are the raw model outputs. CONCH (main datasets only)
-is the exception: its features were saved with `normalize=True`, so they have unit norm.
-PRISM L2-normalises at load time (`X / ‖X‖₂`). Do the same to reproduce the paper's numbers;
-`checksums.csv` reports `mean_l2_norm` for each file.
+**Normalisation.** Measured on the stored files (`mean_l2_norm` in `checksums.csv`): every file under
+`embeddings/` (the six main datasets, all eight models) is L2-normalised (unit norm). Under
+`embeddings_camelyon17/` the features are the raw model outputs (mean norm 9–53 depending on the model);
+CONCH is the exception with unit norm. PRISM L2-normalises at load time (`X / ‖X‖₂`), which is a no-op
+for already-normalised files, so apply the same step to reproduce the paper's numbers.
 
 ## Splits and label conventions
 
