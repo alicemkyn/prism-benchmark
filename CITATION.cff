@@ -1,0 +1,70 @@
+cff-version: 1.2.0
+message: >-
+  If you use this software, please cite the preferred citation
+  (the workshop poster). The software record below is prism-bench 0.3.0.
+type: software
+title: >-
+  PRISM: Pathology Reliability In Scarce-label Medicine.
+  A Tile-level Benchmark of Pathology Foundation Models
+authors:
+  - family-names: Koyun
+    given-names: Alicem
+    affiliation: Westcliff University
+version: 0.3.0
+# Camera-ready date in CHANGELOG.md. PyPI prism-bench 0.3.0 was uploaded 2026-10-23.
+date-released: "2026-10-04"
+license: MIT
+repository-code: https://github.com/alicemkyn/prism-benchmark
+url: https://github.com/alicemkyn/prism-benchmark
+abstract: >-
+  PRISM measures the reliability of pathology foundation models at tile
+  level under label scarcity and distribution shift, under one fixed
+  frozen-embedding linear-probe protocol.
+keywords:
+  - pathology
+  - foundation models
+  - benchmark
+  - calibration
+  - label efficiency
+  - distribution shift
+  - temperature scaling
+identifiers:
+  - type: url
+    value: https://arxiv.org/abs/2610.36517
+    description: arXiv abstract of the workshop poster
+  - type: other
+    value: "arXiv:2610.36517"
+    description: arXiv identifier
+  - type: url
+    value: https://pypi.org/project/prism-bench/
+    description: PyPI package prism-bench (MIT, version 0.3.0)
+  - type: url
+    value: https://huggingface.co/datasets/alicemkyn/PRISM-embeddings
+    description: >-
+      Gated precomputed embeddings. Download requires accepting the
+      dataset click-through agreement.
+preferred-citation:
+  type: conference-paper
+  title: >-
+    PRISM: Pathology Reliability In Scarce-label Medicine.
+    A Tile-level Benchmark of Pathology Foundation Models
+  authors:
+    - family-names: Koyun
+      given-names: Alicem
+      affiliation: Westcliff University
+  year: 2026
+  conference:
+    name: Third Workshop on GenAI for Health (GenAI4Health) at NeurIPS 2026
+  url: https://arxiv.org/abs/2610.36517
+  doi: 10.48550/arXiv.2610.36517
+  date-published: "2026-10-27"
+  identifiers:
+    - type: other
+      value: "arXiv:2610.36517"
+      description: arXiv identifier
+  notes: >-
+    Poster, as stated in the repository README. The arXiv v1 comment
+    (posted 2026-10-27) says the paper was accepted at this workshop.
+    It is not a NeurIPS main-track paper.
+    date-published is the arXiv v1 posting date.
+    doi is the arXiv DataCite DOI for that preprint.

@@ -1,6 +1,7 @@
-include README.md CHANGELOG.md CHANGELOG_REBUTTAL.md LICENSE pyproject.toml setup.py requirements.txt
+include README.md CHANGELOG.md CHANGELOG_REBUTTAL.md LICENSE pyproject.toml setup.py requirements.txt CITATION.cff
 recursive-include prism_bench/reference *.csv *.md
 recursive-include tests *.py
+recursive-include examples *.py
 prune notebooks
 prune results
 prune results_v2
