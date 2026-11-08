@@ -2,7 +2,9 @@
 
 **A Tile-level Benchmark of Pathology Foundation Models**
 
-Alicem Koyun, Westcliff University. NeurIPS 2026 Workshop on GenAI for Health (poster).
+Alicem Koyun, Westcliff University. Poster at the Third Workshop on GenAI for Health (GenAI4Health) at NeurIPS 2026.
+
+**Paper:** [arXiv:2610.36517](https://arxiv.org/abs/2610.36517) · **Code:** [github.com/alicemkyn/prism-benchmark](https://github.com/alicemkyn/prism-benchmark) · **Package:** [prism-bench 0.3.0, MIT](https://pypi.org/project/prism-bench/) · **Embeddings:** [alicemkyn/PRISM-embeddings](https://huggingface.co/datasets/alicemkyn/PRISM-embeddings) (gated; accept the click-through agreement before download) · **Citation file:** [`CITATION.cff`](CITATION.cff)
 
 <p align="center">
   <img src="assets/logo_v4.png" alt="PRISM Logo" width="1000"/>
@@ -100,6 +102,25 @@ print(cmp)   # ranked by Composite Reliability Index (CRI)
 
 This is the snippet in Appendix E of the paper; `tests/test_end_to_end.py`
 runs it verbatim on synthetic embeddings.
+
+A checked CPU run of `evaluate()` and `compare()`, with no download, is:
+
+```bash
+python examples/quickstart_cpu.py
+```
+
+That script builds a small deterministic **synthetic** embedding set and
+prints `data_source=synthetic`. Reference rows in the comparison are the
+bundled `results_v2` numbers. The SyntheticProbe row is not the paper's
+results. `dataset="pcam"` only selects the bundled PCam reference rows
+inside `compare()`.
+
+Released embeddings, where the upstream licences allow them, are gated on
+Hugging Face. Accept the click-through agreement on the dataset page before
+downloading. The script's docstring records one optional path
+(`embeddings/gigapath/bracs/`) and does not request access. MHIST, and UNI,
+CONCH and VIRCHOW2, are not redistributed; see
+`embeddings_release/RELEASE_POLICY.md`.
 
 ## Pre-computed embeddings (Hugging Face)
 
@@ -408,6 +429,8 @@ prism-benchmark/
 ├── results/                                 # v1, as submitted (do not use for numbers)
 ├── results_v2/                              # Corrected re-run and all later analyses
 ├── supplementary/
+├── examples/quickstart_cpu.py               # CPU check, synthetic embeddings
+├── CITATION.cff                             # Citation File Format 1.2.0
 ├── prism_bench/
 │   ├── __init__.py
 │   ├── metrics.py                           # AUROC, ECE, Brier, CRI, temperature
@@ -415,6 +438,7 @@ prism-benchmark/
 │   ├── cli.py                               # prism CLI
 │   └── reference/                           # bundled results_v2 reference CSVs
 ├── tests/test_end_to_end.py                 # pytest, synthetic embeddings
+├── tests/test_quickstart_cpu.py             # runs examples/quickstart_cpu.py
 ├── scripts/build_pypi.sh                    # build + twine check (upload commented)
 ├── pyproject.toml
 └── setup.py                                 # shim; metadata in pyproject.toml
@@ -525,11 +549,17 @@ additional labels made the probabilities worse rather than better.
 @inproceedings{koyun2026prism,
   title     = {{PRISM}: Pathology Reliability In Scarce-label Medicine. A Tile-level Benchmark of Pathology Foundation Models},
   author    = {Koyun, Alicem},
-  booktitle = {NeurIPS 2026 Workshop on GenAI for Health},
+  booktitle = {Third Workshop on GenAI for Health (GenAI4Health) at NeurIPS 2026},
   year      = {2026},
-  url       = {https://github.com/alicemkyn/prism-benchmark}
+  note      = {Poster. Not a NeurIPS main-track paper. Code: \url{https://github.com/alicemkyn/prism-benchmark}},
+  url       = {https://arxiv.org/abs/2610.36517},
+  doi       = {10.48550/arXiv.2610.36517}
 }
 ```
+
+`CITATION.cff` carries the same author, title, year and workshop. The DOI is
+the arXiv DataCite DOI for the preprint (arXiv v1, 2026-10-27). The arXiv
+record does not list a separate proceedings DOI.
 
 ## License
 

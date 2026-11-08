@@ -6,6 +6,26 @@ it is a record of a specific exchange with reviewers rather than a running log.
 
 ---
 
+## Unreleased
+
+Citation and a CPU example only. Metrics, reference tables, the probe
+protocol and the licence are unchanged. This is not a package release.
+
+- `CITATION.cff` (Citation File Format 1.2.0) for prism-bench 0.3.0. The
+  preferred citation is the workshop poster: Alicem Koyun, 2026, Third
+  Workshop on GenAI for Health (GenAI4Health) at NeurIPS 2026. That name is
+  the arXiv v1 comment. The README already described the work as a poster;
+  the citation file repeats that it is not a NeurIPS main-track paper.
+- README BibTeX now points at https://arxiv.org/abs/2610.36517 and records
+  the arXiv DataCite DOI `10.48550/arXiv.2610.36517`. No proceedings DOI is
+  listed on the arXiv record.
+- `examples/quickstart_cpu.py` calls `PRISMEvaluator.evaluate` and
+  `compare` on deterministic synthetic embeddings. It does not download the
+  gated Hugging Face embeddings. The optional real-data path is documented
+  in the script and requires the dataset click-through agreement.
+
+---
+
 ## v0.3.0 — camera-ready release (2026-10-04)
 
 First packaged release at version 0.3.0. The covariate-shift extension

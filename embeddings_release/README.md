@@ -84,7 +84,8 @@ configs:
 
 Frozen tile-level embeddings from pathology foundation models (FMs), released with
 **PRISM: Pathology Reliability In Scarce-label Medicine. A Tile-level Benchmark of Pathology
-Foundation Models** (Alicem Koyun, Westcliff University; NeurIPS 2026 GenAI4Health workshop).
+Foundation Models** (Alicem Koyun, Westcliff University; poster at the Third Workshop on
+GenAI for Health (GenAI4Health) at NeurIPS 2026; [arXiv:2610.36517](https://arxiv.org/abs/2610.36517)).
 They let anyone rerun PRISM's linear-probe protocol (label fractions 1–100%, three seeds,
 AUROC, raw and temperature-scaled ECE, Brier score, Composite Reliability Index (CRI), and
 the cross-dataset and Camelyon17 hospital-transfer grids) without a GPU.

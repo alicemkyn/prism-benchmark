@@ -35,6 +35,7 @@ prism = "prism_bench.cli:main"
 [project.urls]
 Homepage = "https://github.com/alicemkyn/prism-benchmark"
 Source = "https://github.com/alicemkyn/prism-benchmark"
+Paper = "https://arxiv.org/abs/2610.36517"
 Embeddings = "https://huggingface.co/datasets/alicemkyn/PRISM-embeddings"
 
 [tool.setuptools]
